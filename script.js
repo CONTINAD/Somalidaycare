@@ -456,27 +456,38 @@ function spinWheel() {
     gameState.isSpinning = true;
     console.log('Wheel is now spinning!');
 
-    // Calculate random spin
+    // Random spin amount (5-10 full rotations plus random angle)
     const numSegments = WHEEL_OUTCOMES.length;
-    const segmentAngle = 360 / numSegments;
     const randomSpins = 5 + Math.random() * 5;
-    const outcomeIndex = Math.floor(Math.random() * numSegments);
+    const randomAngle = Math.random() * 360;
+    const totalRotation = (randomSpins * 360) + randomAngle;
 
-    // Pointer is at top (270 degrees in canvas coords, or -90 from right)
-    // We want the chosen segment to land under the pointer
-    const targetAngle = (outcomeIndex * segmentAngle) + (segmentAngle / 2);
-    const totalRotation = (randomSpins * 360) + (360 - targetAngle) + 270;
-
-    console.log('Selected outcome:', WHEEL_OUTCOMES[outcomeIndex].name);
+    const finalRotation = gameState.currentRotation + totalRotation;
 
     // Animate
-    animateWheel(gameState.currentRotation, gameState.currentRotation + totalRotation, 4000, () => {
+    animateWheel(gameState.currentRotation, finalRotation, 4000, () => {
+        // Calculate which segment the pointer landed on
+        // Pointer is at top (270 degrees from right/0)
+        // Wheel segments start at 0 degrees (right side) and go clockwise
+        const normalizedRotation = finalRotation % 360;
+
+        // The pointer is at 270 degrees (top), so we need to find which segment is there
+        // Since the wheel rotates clockwise, we subtract from 270
+        const pointerAngle = (270 - normalizedRotation + 360) % 360;
+
+        const segmentAngle = 360 / numSegments;
+        const outcomeIndex = Math.floor(pointerAngle / segmentAngle) % numSegments;
+
         const outcome = WHEEL_OUTCOMES[outcomeIndex];
-        console.log('Wheel stopped on:', outcome.name);
+        console.log('Final rotation:', normalizedRotation);
+        console.log('Pointer angle:', pointerAngle);
+        console.log('Outcome index:', outcomeIndex);
+        console.log('Outcome:', outcome.name);
+
         handleOutcome(outcome);
         gameState.isSpinning = false;
         gameState.totalSpins++;
-        gameState.currentRotation = (gameState.currentRotation + totalRotation) % 360;
+        gameState.currentRotation = finalRotation % 360;
         updateStats();
     });
 }
