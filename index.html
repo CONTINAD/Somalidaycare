@@ -111,8 +111,37 @@
         <div class="result-display" id="resultDisplay">
             <div class="result-content">
                 <div class="result-icon" id="resultIcon">🎰</div>
-                <h2 id="resultTitle">SPIN THE WHEEL!</h2>
-                <p id="resultMessage">See what chaos awaits your babies...</p>
+                <h2 id="resultTitle">WATCH THE WHEEL!</h2>
+                <p id="resultMessage">Next spin decides what happens to the creator fees...</p>
+            </div>
+        </div>
+
+        <!-- Pirate Ship Animation -->
+        <div class="pirate-ship-container" id="pirateShip">
+            <div class="pirate-ship">
+                <div class="ship-body">🏴‍☠️⛵</div>
+                <div class="treasure">💰💎💰</div>
+                <div class="ship-text">PIRATES TOOK THE FEES!</div>
+            </div>
+        </div>
+
+        <!-- Airdrop Winner Popup -->
+        <div class="airdrop-popup" id="airdropPopup">
+            <div class="airdrop-content">
+                <div class="airdrop-close" onclick="closeAirdropPopup()">✕</div>
+                <div class="airdrop-icon">🎁</div>
+                <h2 class="airdrop-title">AIRDROP WINNER!</h2>
+                <p class="airdrop-subtitle">This holder is getting blessed!</p>
+                <div class="winner-address-box">
+                    <span class="winner-label">Send airdrop to:</span>
+                    <span class="winner-address" id="winnerAddress">Loading...</span>
+                    <button class="copy-winner-btn" onclick="copyWinnerAddress()">📋 Copy</button>
+                </div>
+                <div class="winner-holdings">
+                    <span>Holdings:</span>
+                    <span id="winnerHoldings">$0.00</span>
+                </div>
+                <button class="airdrop-done-btn" onclick="closeAirdropPopup()">Done ✓</button>
             </div>
         </div>
 

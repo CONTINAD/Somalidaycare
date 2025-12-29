@@ -1309,3 +1309,261 @@ footer {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-orange);
 }
+
+/* ============================================
+   PIRATE SHIP ANIMATION
+   ============================================ */
+
+.pirate-ship-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+    display: none;
+}
+
+.pirate-ship-container.active {
+    display: block;
+}
+
+.pirate-ship {
+    position: absolute;
+    top: 50%;
+    left: -300px;
+    transform: translateY(-50%);
+    text-align: center;
+    animation: sailAcross 4s ease-in-out forwards;
+}
+
+@keyframes sailAcross {
+    0% {
+        left: -300px;
+        transform: translateY(-50%) rotate(-3deg);
+    }
+
+    20% {
+        transform: translateY(-50%) rotate(3deg);
+    }
+
+    40% {
+        transform: translateY(-50%) rotate(-3deg);
+    }
+
+    60% {
+        transform: translateY(-50%) rotate(3deg);
+    }
+
+    80% {
+        transform: translateY(-50%) rotate(-3deg);
+    }
+
+    100% {
+        left: calc(100% + 300px);
+        transform: translateY(-50%) rotate(0deg);
+    }
+}
+
+.ship-body {
+    font-size: 8rem;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+}
+
+.treasure {
+    font-size: 3rem;
+    margin-top: -20px;
+    animation: bounceGold 0.3s infinite alternate;
+}
+
+@keyframes bounceGold {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-10px);
+    }
+}
+
+.ship-text {
+    font-family: 'Bangers', cursive;
+    font-size: 2rem;
+    color: var(--primary-red);
+    text-shadow: 3px 3px 0 #000, 0 0 20px rgba(255, 71, 87, 0.5);
+    margin-top: 10px;
+    animation: flashText 0.5s infinite alternate;
+}
+
+@keyframes flashText {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0.7;
+    }
+}
+
+/* ============================================
+   AIRDROP WINNER POPUP
+   ============================================ */
+
+.airdrop-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.airdrop-popup.active {
+    display: flex;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.airdrop-content {
+    background: linear-gradient(180deg, #2d2d44, #1a1a2e);
+    border: 5px solid var(--primary-green);
+    border-radius: 30px;
+    padding: 40px 50px;
+    text-align: center;
+    position: relative;
+    max-width: 500px;
+    box-shadow: 0 0 50px rgba(0, 210, 106, 0.3);
+    animation: popIn 0.4s ease-out;
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.airdrop-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.airdrop-close:hover {
+    color: white;
+}
+
+.airdrop-icon {
+    font-size: 5rem;
+    margin-bottom: 10px;
+    animation: giftBounce 0.5s ease-out infinite alternate;
+}
+
+@keyframes giftBounce {
+    from {
+        transform: scale(1) rotate(-5deg);
+    }
+
+    to {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+.airdrop-title {
+    font-family: 'Bangers', cursive;
+    font-size: 2.5rem;
+    color: var(--primary-green);
+    text-shadow: 3px 3px 0 #000;
+    margin-bottom: 10px;
+}
+
+.airdrop-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 25px;
+}
+
+.winner-address-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid var(--primary-green);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.winner-label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.winner-address {
+    display: block;
+    font-family: monospace;
+    font-size: 1rem;
+    color: var(--primary-yellow);
+    word-break: break-all;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 10px;
+}
+
+.copy-winner-btn {
+    font-family: 'Bangers', cursive;
+    font-size: 1rem;
+    padding: 8px 20px;
+    background: var(--primary-purple);
+    border: 2px solid var(--primary-yellow);
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.copy-winner-btn:hover {
+    transform: scale(1.05);
+    background: var(--primary-orange);
+}
+
+.winner-holdings {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+}
+
+.winner-holdings span:last-child {
+    font-family: 'Bangers', cursive;
+    color: var(--primary-green);
+}
+
+.airdrop-done-btn {
+    font-family: 'Bangers', cursive;
+    font-size: 1.4rem;
+    padding: 15px 50px;
+    background: linear-gradient(180deg, var(--primary-green), #00a854);
+    border: 4px solid var(--primary-yellow);
+    border-radius: 40px;
+    color: white;
+    cursor: pointer;
+    text-shadow: 2px 2px 0 #000;
+    transition: all 0.2s;
+}
+
+.airdrop-done-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 210, 106, 0.5);
+}

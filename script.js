@@ -510,7 +510,16 @@ function handleOutcome(outcome) {
         `;
     }
 
-    // Select random baby
+    // Special animations based on outcome
+    if (outcome.action === 'none') {
+        // Pirates took the fees - trigger ship animation
+        triggerPirateAnimation();
+    } else if (outcome.action === 'airdrop') {
+        // Airdrop - pick a random holder with $50+ worth
+        selectAirdropWinner();
+    }
+
+    // Select random baby for display
     const luckyBaby = getRandomItem(gameState.babies);
 
     // Update stats based on outcome type
@@ -537,6 +546,79 @@ function handleOutcome(outcome) {
         renderBabies();
     }, 3000);
 }
+
+// ============================================
+// PIRATE SHIP ANIMATION
+// ============================================
+
+function triggerPirateAnimation() {
+    const pirateShip = document.getElementById('pirateShip');
+    pirateShip.classList.add('active');
+
+    // Remove animation after it completes
+    setTimeout(() => {
+        pirateShip.classList.remove('active');
+    }, 4500);
+}
+
+// ============================================
+// AIRDROP WINNER SELECTION
+// ============================================
+
+// Mock eligible holders (in production, this would come from blockchain data)
+// Holders with at least $50 worth of tokens
+const ELIGIBLE_HOLDERS = [
+    { address: '7xKp...3nRq', holdings: 125.50 },
+    { address: '9mZa...8vBc', holdings: 89.20 },
+    { address: '3aTf...2kLm', holdings: 52.75 },
+    { address: '5wQr...9xYz', holdings: 210.00 },
+    { address: '2jNb...4pHs', holdings: 67.30 },
+    { address: '8cVd...1wFg', holdings: 156.80 },
+    { address: '4rEs...6tUi', holdings: 73.45 },
+    { address: 'Bx9k...mN2p', holdings: 98.60 },
+];
+
+let currentWinnerAddress = '';
+
+function selectAirdropWinner() {
+    // Filter holders with $50+ (already filtered in mock data)
+    const eligibleHolders = ELIGIBLE_HOLDERS.filter(h => h.holdings >= 50);
+
+    if (eligibleHolders.length === 0) {
+        alert('No eligible holders with $50+ found!');
+        return;
+    }
+
+    // Pick random winner
+    const winner = getRandomItem(eligibleHolders);
+    currentWinnerAddress = winner.address;
+
+    // Show popup
+    const popup = document.getElementById('airdropPopup');
+    document.getElementById('winnerAddress').textContent = winner.address;
+    document.getElementById('winnerHoldings').textContent = `$${winner.holdings.toFixed(2)}`;
+    popup.classList.add('active');
+
+    // Log the winner
+    addToHistory(`🎁 AIRDROP WINNER: ${winner.address} ($${winner.holdings.toFixed(2)})`, 'win');
+}
+
+function closeAirdropPopup() {
+    document.getElementById('airdropPopup').classList.remove('active');
+}
+
+function copyWinnerAddress() {
+    navigator.clipboard.writeText(currentWinnerAddress);
+    const btn = document.querySelector('.copy-winner-btn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => {
+        btn.textContent = '📋 Copy';
+    }, 2000);
+}
+
+// Make functions globally accessible
+window.closeAirdropPopup = closeAirdropPopup;
+window.copyWinnerAddress = copyWinnerAddress;
 
 // ============================================
 // TIMER
