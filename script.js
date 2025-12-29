@@ -462,7 +462,7 @@ function spinWheel() {
     }
 
     gameState.isSpinning = true;
-    spinBtn.disabled = true;
+    console.log('Wheel is now spinning!');
 
     // Calculate random spin
     const numSegments = WHEEL_OUTCOMES.length;
@@ -478,11 +478,9 @@ function spinWheel() {
         const outcome = WHEEL_OUTCOMES[outcomeIndex];
         handleOutcome(outcome);
         gameState.isSpinning = false;
-        spinBtn.disabled = false;
         gameState.totalSpins++;
         gameState.currentRotation = totalRotation % 360;
         updateStats();
-        resetTimer();
     });
 }
 
