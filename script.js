@@ -46,67 +46,67 @@ const RARITIES = ['common', 'common', 'common', 'rare', 'rare', 'epic', 'legenda
 
 const WHEEL_OUTCOMES = [
     {
-        name: 'AIRDROP',
-        icon: '💸',
-        message: 'AIRDROP SECURED! Dev blessed your baby with free tokens. Inshallah!',
+        name: 'BUYBACK',
+        icon: '💰',
+        message: 'BUYBACK TIME! Dev using creator fees to buy $SOMALI off the market! Price go up inshallah!',
         type: 'win',
-        points: 100,
+        action: 'buyback',
         color: '#00D26A'
     },
     {
-        name: 'WALLAHI',
-        icon: '🤲',
-        message: 'Wallahi bro nothing happened. Your baby just vibin. Try again.',
+        name: 'PIRATES',
+        icon: '🏴‍☠️',
+        message: 'SOMALI PIRATES TOOK YOUR SHIPMENT! They ran off with the fees... nothing happens this round.',
         type: 'neutral',
-        points: 0,
+        action: 'none',
         color: '#607D8B'
     },
     {
-        name: 'PUMP',
-        icon: '📈',
-        message: 'PUMP! Chart going crazy! Baby securing generational wealth rn!',
+        name: 'AIRDROP',
+        icon: '🎁',
+        message: 'AIRDROP! Random holder getting blessed with free tokens! Check your wallet!',
         type: 'win',
-        points: 150,
-        color: '#2196F3'
+        action: 'airdrop',
+        color: '#9C27B0'
+    },
+    {
+        name: 'BURN',
+        icon: '🔥',
+        message: 'BURN BABY BURN! Fees being used to buy and BURN tokens! Supply going down!',
+        type: 'win',
+        action: 'burn',
+        color: '#FF6B35'
     },
     {
         name: 'WHALE',
         icon: '🐋',
-        message: 'A WHALE just aped in! Market cap going crazy! Your baby is thriving!',
+        message: 'A WHALE IS ENTERING! Big buyer spotted! The daycare is about to pump!',
         type: 'win',
-        points: 200,
-        color: '#9C27B0'
-    },
-    {
-        name: 'MOON',
-        icon: '🚀',
-        message: 'TO THE MOOOOON! Baby eating lobster tonight! Mashallah!',
-        type: 'win',
-        points: 500,
-        color: '#FFD700'
+        action: 'whale_alert',
+        color: '#2196F3'
     },
     {
         name: 'HODL',
         icon: '💎',
-        message: 'Diamond hands activated! Your baby knows patience pays!',
-        type: 'win',
-        points: 75,
+        message: 'DIAMOND HANDS! Fees being saved for a BIGGER buyback later. Patience pays!',
+        type: 'neutral',
+        action: 'hodl',
         color: '#00BCD4'
     },
     {
-        name: 'BABY',
-        icon: '👶',
-        message: 'Alhamdulillah! Free baby appeared! The daycare is expanding!',
+        name: 'LP ADD',
+        icon: '💧',
+        message: 'LIQUIDITY BOOST! Adding more LP to make trading smoother. Wallahi!',
         type: 'win',
-        points: 200,
-        color: '#FF6B35'
+        action: 'lp_add',
+        color: '#3498DB'
     },
     {
         name: 'SABAR',
         icon: '🙏',
-        message: 'Sabar (patience). Nothing this spin. Allah has a plan for your gains.',
+        message: 'SABAR (patience)! The elders are deciding... fees held for next spin.',
         type: 'neutral',
-        points: 0,
+        action: 'pending',
         color: '#455A64'
     }
 ];
