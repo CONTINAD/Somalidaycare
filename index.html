@@ -82,28 +82,27 @@
     <main>
         <!-- Wheel Section -->
         <section class="wheel-section">
-            <h2 class="section-title glow-text">🏴‍☠️ SPIN FOR FEE DESTINY 🏴‍☠️</h2>
-            <p class="section-subtitle">What happens to the creator fees? Spin to find out! Buyback? Airdrop? Or did the
-                pirates take it?</p>
+            <h2 class="section-title glow-text">🏴‍☠️ WHAT HAPPENS TO THE FEES? 🏴‍☠️</h2>
+            <p class="section-subtitle">Watch the wheel spin every hour to see what the dev does with creator fees!</p>
 
             <div class="wheel-area">
                 <div class="wheel-container">
                     <div class="wheel-pointer">▼</div>
-                    <canvas id="wheelCanvas" width="380" height="380"></canvas>
+                    <canvas id="wheelCanvas" width="450" height="450"></canvas>
                     <div class="wheel-center">
                         <img src="baby_bitcoin.png" alt="Spin Baby" class="center-baby">
                     </div>
                 </div>
 
-                <div class="wheel-controls">
+                <div class="wheel-info">
                     <div class="countdown-container">
-                        <p class="next-spin">⏰ Auto-Spin In:</p>
-                        <div class="timer" id="timer">01:00</div>
+                        <p class="next-spin">⏰ Next Spin In:</p>
+                        <div class="timer" id="timer">59:59</div>
                     </div>
-                    <button class="spin-btn" id="spinBtn">
-                        <span class="btn-text">🎲 SPIN NOW! 🎲</span>
-                        <span class="btn-subtext">Test your luck</span>
-                    </button>
+                    <div class="last-result" id="lastResult">
+                        <div class="last-result-label">Last Result:</div>
+                        <div class="last-result-value">🎰 Waiting for first spin...</div>
+                    </div>
                 </div>
             </div>
         </section>

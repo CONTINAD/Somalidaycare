@@ -132,8 +132,8 @@ let gameState = {
 // DOM ELEMENTS
 // ============================================
 
-let wheelCanvas, ctx, spinBtn, timer, resultDisplay, resultTitle, resultMessage, resultIcon;
-let babiesGrid, addBabyBtn, historyLog, leaderboard;
+let wheelCanvas, ctx, timer, resultDisplay, resultTitle, resultMessage, resultIcon;
+let babiesGrid, addBabyBtn, historyLog, leaderboard, lastResultEl;
 let totalBabiesEl, totalWinsEl, totalLossesEl, totalSpinsEl;
 let tokenCA, buyBtn, chartBtn, tickerBabies, tickerBabies2, tickerSpins;
 
@@ -150,6 +150,7 @@ function initElements() {
     addBabyBtn = document.getElementById('addBabyBtn');
     historyLog = document.getElementById('historyLog');
     leaderboard = document.getElementById('leaderboard');
+    lastResultEl = document.getElementById('lastResult');
 
     totalBabiesEl = document.getElementById('totalBabies');
     totalWinsEl = document.getElementById('totalWins');
@@ -501,28 +502,31 @@ function handleOutcome(outcome) {
     resultMessage.textContent = outcome.message;
     resultDisplay.className = `result-display ${outcome.type}`;
 
+    // Update last result display
+    if (lastResultEl) {
+        lastResultEl.innerHTML = `
+            <div class="last-result-label">Last Result:</div>
+            <div class="last-result-value">${outcome.icon} ${outcome.name} - ${outcome.action}</div>
+        `;
+    }
+
     // Select random baby
     const luckyBaby = getRandomItem(gameState.babies);
 
-    // Update stats
+    // Update stats based on outcome type
     if (outcome.type === 'win') {
         luckyBaby.wins++;
         luckyBaby.status = 'winner';
         gameState.totalWins++;
-        addToHistory(`🎉 ${luckyBaby.name} won! ${outcome.name}!`, 'win');
-    } else if (outcome.type === 'lose') {
-        luckyBaby.losses++;
+        addToHistory(`${outcome.icon} ${outcome.name}! ${outcome.message}`, 'win');
+    } else if (outcome.action === 'none') {
+        // Pirates took it - count as loss
         luckyBaby.status = 'loser';
         gameState.totalLosses++;
-        addToHistory(`💀 ${luckyBaby.name} got ${outcome.name}!`, 'lose');
+        addToHistory(`${outcome.icon} ${outcome.name}! ${outcome.message}`, 'lose');
     } else {
         luckyBaby.status = 'neutral';
-        addToHistory(`😐 ${outcome.name} - nothing happened to ${luckyBaby.name}`, 'neutral');
-    }
-
-    // Special: FREE BABY
-    if (outcome.name === 'BABY') {
-        createBaby();
+        addToHistory(`${outcome.icon} ${outcome.name}! ${outcome.message}`, 'neutral');
     }
 
     renderBabies();
@@ -561,7 +565,8 @@ function startTimer() {
 }
 
 function resetTimer() {
-    gameState.timerSeconds = 60;
+    // 60 minutes = 3600 seconds for hourly spins
+    gameState.timerSeconds = 3600;
     timer.textContent = formatTime(gameState.timerSeconds);
 }
 
@@ -621,8 +626,7 @@ function init() {
     // Draw wheel
     drawWheel(0);
 
-    // Event listeners
-    spinBtn.addEventListener('click', spinWheel);
+    // Event listeners (no spin button - viewers only watch)
     addBabyBtn.addEventListener('click', createBaby);
 
     // Start with 3 random babies
@@ -630,11 +634,11 @@ function init() {
         createBaby();
     }
 
-    // Start timer
+    // Start hourly timer
     startTimer();
 
     updateStats();
-    addToHistory('🏠 Welcome to Somali Daycare! Spin the wheel for chaos!', 'neutral');
+    addToHistory('🏴‍☠️ Welcome to Somali Daycare! Watch the wheel spin every hour!', 'neutral');
 }
 
 document.addEventListener('DOMContentLoaded', init);
