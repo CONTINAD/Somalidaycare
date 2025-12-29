@@ -10,11 +10,21 @@
 
 const PUMP_CONFIG = {
     // Replace with your actual pump.fun token contract address
-    contractAddress: 'YOUR_PUMP_FUN_CA_HERE',
+    contractAddress: 'D9wNftvU7FbpGzja5ejCz4TQNNzHsDoL1ZdW6zYK2QxQ',
     pumpFunUrl: 'https://pump.fun/',
     twitterUrl: 'https://twitter.com/',
     telegramUrl: 'https://t.me/',
     chartUrl: 'https://dexscreener.com/solana/',
+};
+
+// ============================================
+// HELIUS API CONFIGURATION
+// ============================================
+
+const HELIUS_CONFIG = {
+    apiKey: 'ae211108-bdbf-40af-90e2-c5418e3f62d3',
+    rpcUrl: 'https://mainnet.helius-rpc.com/?api-key=ae211108-bdbf-40af-90e2-c5418e3f62d3',
+    minHoldingsUSD: 50, // Minimum $50 worth to be eligible for airdrop
 };
 
 // ============================================
@@ -562,45 +572,102 @@ function triggerPirateAnimation() {
 }
 
 // ============================================
-// AIRDROP WINNER SELECTION
+// AIRDROP WINNER SELECTION (REAL HELIUS DATA)
 // ============================================
 
-// Mock eligible holders (in production, this would come from blockchain data)
-// Holders with at least $50 worth of tokens
-const ELIGIBLE_HOLDERS = [
-    { address: '7xKp...3nRq', holdings: 125.50 },
-    { address: '9mZa...8vBc', holdings: 89.20 },
-    { address: '3aTf...2kLm', holdings: 52.75 },
-    { address: '5wQr...9xYz', holdings: 210.00 },
-    { address: '2jNb...4pHs', holdings: 67.30 },
-    { address: '8cVd...1wFg', holdings: 156.80 },
-    { address: '4rEs...6tUi', holdings: 73.45 },
-    { address: 'Bx9k...mN2p', holdings: 98.60 },
-];
-
 let currentWinnerAddress = '';
+let cachedHolders = []; // Cache holders to avoid repeated API calls
 
-function selectAirdropWinner() {
-    // Filter holders with $50+ (already filtered in mock data)
-    const eligibleHolders = ELIGIBLE_HOLDERS.filter(h => h.holdings >= 50);
+// Fetch real token holders from Helius API
+async function fetchTokenHolders() {
+    try {
+        console.log('Fetching holders from Helius...');
 
-    if (eligibleHolders.length === 0) {
-        alert('No eligible holders with $50+ found!');
-        return;
+        const response = await fetch(HELIUS_CONFIG.rpcUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: 'get-token-accounts',
+                method: 'getTokenAccounts',
+                params: {
+                    mint: PUMP_CONFIG.contractAddress,
+                    limit: 100 // Get top 100 holders
+                }
+            })
+        });
+
+        const data = await response.json();
+        console.log('Helius response:', data);
+
+        if (data.result && data.result.token_accounts) {
+            return data.result.token_accounts;
+        }
+        return [];
+    } catch (error) {
+        console.error('Error fetching holders:', error);
+        return [];
     }
+}
 
-    // Pick random winner
-    const winner = getRandomItem(eligibleHolders);
-    currentWinnerAddress = winner.address;
+// Get token price (simplified - would need real price API in production)
+async function getTokenPrice() {
+    // For now, use a mock price. In production, fetch from Jupiter/Birdeye
+    return 0.0001; // Example: $0.0001 per token
+}
 
-    // Show popup
+async function selectAirdropWinner() {
+    // Show loading state
     const popup = document.getElementById('airdropPopup');
-    document.getElementById('winnerAddress').textContent = winner.address;
-    document.getElementById('winnerHoldings').textContent = `$${winner.holdings.toFixed(2)}`;
+    document.getElementById('winnerAddress').textContent = 'Loading holders...';
+    document.getElementById('winnerHoldings').textContent = '...';
     popup.classList.add('active');
 
-    // Log the winner
-    addToHistory(`🎁 AIRDROP WINNER: ${winner.address} ($${winner.holdings.toFixed(2)})`, 'win');
+    try {
+        // Fetch holders if not cached
+        if (cachedHolders.length === 0) {
+            cachedHolders = await fetchTokenHolders();
+        }
+
+        if (cachedHolders.length === 0) {
+            document.getElementById('winnerAddress').textContent = 'No holders found!';
+            document.getElementById('winnerHoldings').textContent = '$0.00';
+            return;
+        }
+
+        // Get token price
+        const tokenPrice = await getTokenPrice();
+
+        // Filter holders with $50+ worth
+        const eligibleHolders = cachedHolders.filter(holder => {
+            const balance = holder.amount / Math.pow(10, 6); // Adjust decimals as needed
+            const valueUSD = balance * tokenPrice;
+            return valueUSD >= HELIUS_CONFIG.minHoldingsUSD;
+        });
+
+        // If no eligible holders, pick from all holders
+        const holderPool = eligibleHolders.length > 0 ? eligibleHolders : cachedHolders;
+
+        // Pick random winner
+        const winner = holderPool[Math.floor(Math.random() * holderPool.length)];
+        const balance = winner.amount / Math.pow(10, 6);
+        const valueUSD = balance * tokenPrice;
+
+        // Get the owner address (wallet address)
+        currentWinnerAddress = winner.owner || winner.address || 'Unknown';
+
+        // Update popup
+        document.getElementById('winnerAddress').textContent = currentWinnerAddress;
+        document.getElementById('winnerHoldings').textContent = `${balance.toLocaleString()} tokens (~$${valueUSD.toFixed(2)})`;
+
+        // Log the winner
+        addToHistory(`🎁 AIRDROP WINNER: ${currentWinnerAddress.substring(0, 8)}...${currentWinnerAddress.slice(-4)}`, 'win');
+
+    } catch (error) {
+        console.error('Error selecting winner:', error);
+        document.getElementById('winnerAddress').textContent = 'Error loading holders';
+        document.getElementById('winnerHoldings').textContent = 'Try again';
+    }
 }
 
 function closeAirdropPopup() {
