@@ -687,35 +687,43 @@ window.closeAirdropPopup = closeAirdropPopup;
 window.copyWinnerAddress = copyWinnerAddress;
 
 // ============================================
-// TIMER
+// TIMER (SYNCED TO REAL TIME)
 // ============================================
 
 function startTimer() {
+    // Sync timer so everyone sees the same countdown
+    // Spins at the top of each minute (:00 seconds)
+    updateSyncedTimer();
+
     gameState.timerInterval = setInterval(() => {
-        gameState.timerSeconds--;
-        timer.textContent = formatTime(gameState.timerSeconds);
-
-        if (gameState.timerSeconds <= 0) {
-            if (gameState.babies.length > 0 && !gameState.isSpinning) {
-                spinWheel();
-            } else {
-                resetTimer();
-            }
-        }
-
-        // Flash when low
-        if (gameState.timerSeconds <= 10) {
-            timer.style.color = gameState.timerSeconds % 2 === 0 ? '#FF4757' : '#FFD700';
-        } else {
-            timer.style.color = '#FFD700';
-        }
+        updateSyncedTimer();
     }, 1000);
 }
 
-function resetTimer() {
-    // 1 minute for testing (60 seconds)
-    gameState.timerSeconds = 60;
+function updateSyncedTimer() {
+    const now = new Date();
+    const secondsUntilNextMinute = 60 - now.getSeconds();
+
+    gameState.timerSeconds = secondsUntilNextMinute;
     timer.textContent = formatTime(gameState.timerSeconds);
+
+    // Spin at exactly :00 seconds
+    if (now.getSeconds() === 0 && !gameState.isSpinning) {
+        if (gameState.babies.length > 0) {
+            spinWheel();
+        }
+    }
+
+    // Flash when low
+    if (gameState.timerSeconds <= 10) {
+        timer.style.color = gameState.timerSeconds % 2 === 0 ? '#FF4757' : '#FFD700';
+    } else {
+        timer.style.color = '#FFD700';
+    }
+}
+
+function resetTimer() {
+    // Timer syncs to real time, no manual reset needed
 }
 
 // ============================================
