@@ -481,7 +481,7 @@ section {
 .section-subtitle {
     text-align: center;
     color: var(--text-muted);
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
 /* ============================================
@@ -490,6 +490,7 @@ section {
 
 .wheel-section {
     text-align: center;
+    padding-top: 2rem;
 }
 
 .wheel-area {

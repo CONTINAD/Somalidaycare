@@ -470,16 +470,21 @@ function spinWheel() {
     const randomSpins = 5 + Math.random() * 5;
     const outcomeIndex = Math.floor(Math.random() * numSegments);
 
-    const targetAngle = 360 - (outcomeIndex * segmentAngle) - segmentAngle / 2 + 90;
-    const totalRotation = gameState.currentRotation + (randomSpins * 360) + targetAngle;
+    // Pointer is at top (270 degrees in canvas coords, or -90 from right)
+    // We want the chosen segment to land under the pointer
+    const targetAngle = (outcomeIndex * segmentAngle) + (segmentAngle / 2);
+    const totalRotation = (randomSpins * 360) + (360 - targetAngle) + 270;
+
+    console.log('Selected outcome:', WHEEL_OUTCOMES[outcomeIndex].name);
 
     // Animate
-    animateWheel(gameState.currentRotation, totalRotation, 4000, () => {
+    animateWheel(gameState.currentRotation, gameState.currentRotation + totalRotation, 4000, () => {
         const outcome = WHEEL_OUTCOMES[outcomeIndex];
+        console.log('Wheel stopped on:', outcome.name);
         handleOutcome(outcome);
         gameState.isSpinning = false;
         gameState.totalSpins++;
-        gameState.currentRotation = totalRotation % 360;
+        gameState.currentRotation = (gameState.currentRotation + totalRotation) % 360;
         updateStats();
     });
 }
