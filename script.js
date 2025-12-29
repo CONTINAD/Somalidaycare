@@ -21,9 +21,11 @@ const PUMP_CONFIG = {
 // BABY CONFIGURATION - ALL THE NEW BABIES!
 // ============================================
 
-// Only using working images without checkered backgrounds
+// New South Park style Somali babies!
 const BABY_IMAGES = [
-    'baby1.png', 'baby2.png', 'baby3.png', 'baby4.png'
+    'baby_suit.png', 'baby_rocket.png', 'baby_crying.png', 'baby_hijab.png',
+    'baby_bitcoin.png', 'baby_king.png', 'baby_diamond2.png', 'baby_moon2.png',
+    'baby_hodl.png', 'baby_pirate2.png'
 ];
 
 const BABY_NAMES = [
@@ -53,7 +55,7 @@ const WHEEL_OUTCOMES = [
     },
     {
         name: 'WALLAHI',
-        icon: '💀',
+        icon: '🤲',
         message: 'Wallahi bro nothing happened. Your baby just vibin. Try again.',
         type: 'neutral',
         points: 0,
@@ -68,12 +70,12 @@ const WHEEL_OUTCOMES = [
         color: '#2196F3'
     },
     {
-        name: 'RUGGED',
-        icon: '💀',
-        message: 'RUGGED! Dev took the LP and went back to Mogadishu. Maalin xun!',
-        type: 'lose',
-        points: -100,
-        color: '#FF4757'
+        name: 'WHALE',
+        icon: '🐋',
+        message: 'A WHALE just aped in! Market cap going crazy! Your baby is thriving!',
+        type: 'win',
+        points: 200,
+        color: '#9C27B0'
     },
     {
         name: 'MOON',
@@ -84,12 +86,12 @@ const WHEEL_OUTCOMES = [
         color: '#FFD700'
     },
     {
-        name: 'JEET',
-        icon: '📉',
-        message: 'Some jeet paper handed. Baby crying but we HODLing still.',
-        type: 'lose',
-        points: -50,
-        color: '#9C27B0'
+        name: 'HODL',
+        icon: '💎',
+        message: 'Diamond hands activated! Your baby knows patience pays!',
+        type: 'win',
+        points: 75,
+        color: '#00BCD4'
     },
     {
         name: 'BABY',
@@ -97,12 +99,12 @@ const WHEEL_OUTCOMES = [
         message: 'Alhamdulillah! Free baby appeared! The daycare is expanding!',
         type: 'win',
         points: 200,
-        color: '#00BCD4'
+        color: '#FF6B35'
     },
     {
         name: 'SABAR',
         icon: '🙏',
-        message: 'Sabar (patience). Nothing this spin. Allah has a plan.',
+        message: 'Sabar (patience). Nothing this spin. Allah has a plan for your gains.',
         type: 'neutral',
         points: 0,
         color: '#455A64'
@@ -332,11 +334,11 @@ window.copyCA = copyCA;
 
 function loadLeaderboard() {
     const mockHolders = [
-        { address: generateHolderAddress(), amount: '420.69M', rank: 1, image: 'baby1.png' },
-        { address: generateHolderAddress(), amount: '69.42M', rank: 2, image: 'baby2.png' },
-        { address: generateHolderAddress(), amount: '33.33M', rank: 3, image: 'baby3.png' },
-        { address: generateHolderAddress(), amount: '21.00M', rank: 4, image: 'baby4.png' },
-        { address: generateHolderAddress(), amount: '10.50M', rank: 5, image: 'baby1.png' },
+        { address: generateHolderAddress(), amount: '420.69M', rank: 1, image: 'baby_king.png' },
+        { address: generateHolderAddress(), amount: '69.42M', rank: 2, image: 'baby_suit.png' },
+        { address: generateHolderAddress(), amount: '33.33M', rank: 3, image: 'baby_diamond2.png' },
+        { address: generateHolderAddress(), amount: '21.00M', rank: 4, image: 'baby_moon2.png' },
+        { address: generateHolderAddress(), amount: '10.50M', rank: 5, image: 'baby_hodl.png' },
     ];
 
     gameState.holders = mockHolders;
@@ -370,8 +372,17 @@ function renderLeaderboard() {
 function createBaby() {
     const rarity = getRandomItem(RARITIES);
 
-    // Using the 4 working baby images for all rarities
-    const imagePool = ['baby1.png', 'baby2.png', 'baby3.png', 'baby4.png'];
+    // Use the new South Park style images based on rarity
+    let imagePool;
+    if (rarity === 'legendary') {
+        imagePool = ['baby_king.png', 'baby_diamond2.png', 'baby_moon2.png'];
+    } else if (rarity === 'epic') {
+        imagePool = ['baby_suit.png', 'baby_bitcoin.png', 'baby_rocket.png'];
+    } else if (rarity === 'rare') {
+        imagePool = ['baby_hodl.png', 'baby_pirate2.png'];
+    } else {
+        imagePool = ['baby_crying.png', 'baby_hijab.png'];
+    }
 
     const baby = {
         id: Date.now() + Math.random(),
