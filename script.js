@@ -104,14 +104,6 @@ const WHEEL_OUTCOMES = [
         color: '#00BCD4'
     },
     {
-        name: 'LP ADD',
-        icon: '💧',
-        message: 'LIQUIDITY BOOST! Adding more LP to make trading smoother. Wallahi!',
-        type: 'win',
-        action: 'lp_add',
-        color: '#3498DB'
-    },
-    {
         name: 'SABAR',
         icon: '🙏',
         message: 'SABAR (patience)! The elders are deciding... fees held for next spin.',
