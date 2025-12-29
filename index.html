@@ -4,8 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Somali Daycare | Baby Race 🇸🇴👶</title>
-    <meta name="description" content="Watch babies race! The most chaotic meme coin on Solana.">
+    <title>Somali Daycare | $SOMALI on Pump.fun 🇸🇴👶</title>
+    <meta name="description"
+        content="The most chaotic meme coin on Solana. Spin the wheel, adopt babies, and pray for moon!">
+    <meta property="og:title" content="Somali Daycare | $SOMALI">
+    <meta property="og:description" content="Where Chaos Meets Custody. The #1 daycare on the blockchain.">
+    <meta property="og:image" content="hero_banner.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap"
@@ -14,108 +18,204 @@
 </head>
 
 <body>
-    <!-- CA Banner - Always visible at top -->
-    <div class="ca-banner">
-        <div class="ca-left">
-            <span class="token-name">$SOMALI</span>
-            <span class="ca-label">CA:</span>
-            <span class="ca-address" id="caAddress" onclick="copyCA()">Click to set CA</span>
-            <span class="copy-feedback" id="copyFeedback">Copied!</span>
+    <div class="background-layer"></div>
+
+    <!-- Floating decorations -->
+    <div class="floating-items">
+        <div class="float-item">🍼</div>
+        <div class="float-item">💸</div>
+        <div class="float-item">🚀</div>
+        <div class="float-item">👶</div>
+        <div class="float-item">💎</div>
+        <div class="float-item">🌙</div>
+        <div class="float-item">🔥</div>
+        <div class="float-item">⭐</div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="title">
+                <span class="somali">SOMALI</span>
+                <span class="daycare">DAYCARE</span>
+            </h1>
+            <p class="tagline">"Where Holders Get Babies & Babies Get... Results?"</p>
+
+            <!-- Token Banner -->
+            <div class="token-banner" id="tokenBanner">
+                <div class="token-info">
+                    <span class="token-label">$SOMALI</span>
+                    <span class="token-ca" id="tokenCA">CA Coming Soon...</span>
+                    <button class="copy-btn" onclick="copyCA()">📋</button>
+                </div>
+                <div class="cta-buttons">
+                    <a href="#" class="buy-btn" id="buyBtn" target="_blank">🚀 BUY $SOMALI</a>
+                    <a href="#" class="chart-btn" id="chartBtn" target="_blank">📈 CHART</a>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="social-links">
+                <a href="#" class="social-btn twitter" id="twitterBtn">𝕏 Twitter</a>
+                <a href="#" class="social-btn telegram" id="telegramBtn">✈️ Telegram</a>
+            </div>
         </div>
-        <div class="ca-right">
-            <a href="https://pump.fun" class="action-btn buy-btn" id="buyBtn" target="_blank">🚀 BUY</a>
-            <a href="#" class="action-btn chart-btn" id="chartBtn" target="_blank">📈 CHART</a>
-            <a href="#" class="action-btn social-btn" id="twitterBtn" target="_blank">𝕏</a>
-            <a href="#" class="action-btn social-btn" id="telegramBtn" target="_blank">✈️</a>
+        <div class="hero-babies">
+            <img src="baby1.png" alt="Baby 1" class="hero-baby baby-float-1">
+            <img src="baby2.png" alt="Baby 2" class="hero-baby baby-float-2">
+            <img src="baby3.png" alt="Baby 3" class="hero-baby baby-float-3">
+        </div>
+    </header>
+
+    <!-- Live Stats Ticker -->
+    <div class="stats-ticker">
+        <div class="ticker-content">
+            <span class="ticker-item">🔥 TRENDING ON PUMP.FUN</span>
+            <span class="ticker-item">👶 <span id="tickerBabies">0</span> BABIES ADOPTED</span>
+            <span class="ticker-item">🎰 <span id="tickerSpins">0</span> SPINS TODAY</span>
+            <span class="ticker-item">💰 MC: TBD</span>
+            <span class="ticker-item">🔥 TRENDING ON PUMP.FUN</span>
+            <span class="ticker-item">👶 <span id="tickerBabies2">0</span> BABIES ADOPTED</span>
         </div>
     </div>
 
-    <!-- Main Game Area -->
-    <div class="game-container">
-        <!-- Race Track -->
-        <div class="race-track" id="raceTrack">
-            <div class="track-bg"></div>
+    <main>
+        <!-- Wheel Section -->
+        <section class="wheel-section">
+            <h2 class="section-title glow-text">🎰 SPIN THE WHEEL OF DESTINY 🎰</h2>
+            <p class="section-subtitle">Every spin changes your baby's fate. Wallahi.</p>
 
-            <!-- Finish Line -->
-            <div class="finish-line">
-                <div class="finish-text">🏁 FINISH 🏁</div>
+            <div class="wheel-area">
+                <div class="wheel-container">
+                    <div class="wheel-pointer">▼</div>
+                    <canvas id="wheelCanvas" width="380" height="380"></canvas>
+                    <div class="wheel-center">
+                        <img src="baby4.png" alt="Spin Baby" class="center-baby">
+                    </div>
+                </div>
+
+                <div class="wheel-controls">
+                    <div class="countdown-container">
+                        <p class="next-spin">⏰ Auto-Spin In:</p>
+                        <div class="timer" id="timer">01:00</div>
+                    </div>
+                    <button class="spin-btn" id="spinBtn">
+                        <span class="btn-text">🎲 SPIN NOW! 🎲</span>
+                        <span class="btn-subtext">Test your luck</span>
+                    </button>
+                </div>
             </div>
+        </section>
 
-            <!-- Race Lanes -->
-            <div class="lanes" id="lanes">
-                <!-- Lanes generated by JS -->
+        <!-- Result Display -->
+        <div class="result-display" id="resultDisplay">
+            <div class="result-content">
+                <div class="result-icon" id="resultIcon">🎰</div>
+                <h2 id="resultTitle">SPIN THE WHEEL!</h2>
+                <p id="resultMessage">See what chaos awaits your babies...</p>
             </div>
-
-            <!-- Start Line -->
-            <div class="start-line"></div>
         </div>
 
-        <!-- Race Controls -->
-        <div class="race-controls">
-            <button class="race-btn" id="raceBtn">
-                <span class="btn-icon">🏁</span>
-                <span class="btn-text">START RACE!</span>
+        <!-- Your Babies Section -->
+        <section class="babies-section">
+            <h2 class="section-title">👶 YOUR DAYCARE BABIES 👶</h2>
+            <p class="section-subtitle">Each holder gets assigned a baby. Some win, some get rugged. Inshallah! 🙏</p>
+
+            <div class="babies-grid" id="babiesGrid">
+                <!-- Babies populated by JS -->
+            </div>
+
+            <button class="add-baby-btn" id="addBabyBtn">
+                <span>➕ ADOPT NEW BABY</span>
             </button>
-            <div class="race-status" id="raceStatus">Click to start the baby race!</div>
-        </div>
+        </section>
 
-        <!-- Winner Popup -->
-        <div class="winner-popup" id="winnerPopup">
-            <div class="popup-content">
-                <div class="popup-close" onclick="closePopup()">✕</div>
-                <div class="winner-crown">👑</div>
-                <img src="" alt="Winner" class="winner-image" id="winnerImage">
-                <h2 class="winner-name" id="winnerName">Baby Name</h2>
-                <p class="winner-message" id="winnerMessage">Winner message!</p>
-                <div class="winner-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="winnerWins">0</span>
-                        <span class="stat-label">Wins</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="winnerRaces">0</span>
-                        <span class="stat-label">Races</span>
-                    </div>
-                </div>
-                <button class="popup-btn" onclick="closePopup()">Race Again! 🏁</button>
+        <!-- Leaderboard -->
+        <section class="leaderboard-section">
+            <h2 class="section-title">🏆 TOP HOLDERS LEADERBOARD 🏆</h2>
+            <p class="section-subtitle">The whales of Somali Daycare</p>
+
+            <div class="leaderboard" id="leaderboard">
+                <!-- Populated by JS -->
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Leaderboard Sidebar -->
-    <div class="sidebar">
-        <h3 class="sidebar-title">🏆 TOP BABIES</h3>
-        <div class="leaderboard" id="leaderboard">
-            <!-- Generated by JS -->
-        </div>
-        <div class="race-count">
-            <span>Total Races:</span>
-            <span id="totalRaces">0</span>
-        </div>
-    </div>
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">👶</div>
+                <div class="stat-value" id="totalBabies">0</div>
+                <div class="stat-label">Total Babies</div>
+            </div>
+            <div class="stat-card win">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="totalWins">0</div>
+                <div class="stat-label">Total Wins</div>
+            </div>
+            <div class="stat-card lose">
+                <div class="stat-icon">💀</div>
+                <div class="stat-value" id="totalLosses">0</div>
+                <div class="stat-label">Got Rugged</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎰</div>
+                <div class="stat-value" id="totalSpins">0</div>
+                <div class="stat-label">Spins Done</div>
+            </div>
+        </section>
 
-    <!-- Character Select (click a baby to see stats) -->
-    <div class="character-popup" id="characterPopup">
-        <div class="char-popup-content">
-            <div class="char-close" onclick="closeCharPopup()">✕</div>
-            <img src="" alt="Baby" class="char-image" id="charImage">
-            <h3 class="char-name" id="charName">Baby Name</h3>
-            <div class="char-stats">
-                <div class="char-stat">
-                    <span class="char-stat-label">Wins</span>
-                    <span class="char-stat-value" id="charWins">0</span>
-                </div>
-                <div class="char-stat">
-                    <span class="char-stat-label">Races</span>
-                    <span class="char-stat-value" id="charRaces">0</span>
-                </div>
-                <div class="char-stat">
-                    <span class="char-stat-label">Win %</span>
-                    <span class="char-stat-value" id="charWinRate">0%</span>
+        <!-- Chaos Log -->
+        <section class="history-section">
+            <h2 class="section-title">📜 CHAOS LOG 📜</h2>
+            <div class="history-log" id="historyLog">
+                <div class="log-entry">
+                    <span class="log-time">--:--</span>
+                    <span class="log-text">Waiting for first spin...</span>
                 </div>
             </div>
+        </section>
+
+        <!-- Tokenomics -->
+        <section class="tokenomics-section">
+            <h2 class="section-title">📊 TOKENOMICS 📊</h2>
+            <div class="tokenomics-grid">
+                <div class="tokenomics-card">
+                    <div class="tokenomics-value">1B</div>
+                    <div class="tokenomics-label">Total Supply</div>
+                </div>
+                <div class="tokenomics-card">
+                    <div class="tokenomics-value">0%</div>
+                    <div class="tokenomics-label">Buy/Sell Tax</div>
+                </div>
+                <div class="tokenomics-card">
+                    <div class="tokenomics-value">🔥</div>
+                    <div class="tokenomics-label">LP Burned</div>
+                </div>
+                <div class="tokenomics-card">
+                    <div class="tokenomics-value">✅</div>
+                    <div class="tokenomics-label">Mintable Revoked</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <img src="baby3.png" alt="Baby" class="footer-mascot">
+            <div class="footer-text">
+                <p class="disclaimer">⚠️ $SOMALI is a meme coin with no intrinsic value. Do your own research. Not
+                    financial advice. ⚠️</p>
+                <div class="footer-links">
+                    <a href="#" id="footerTwitter">Twitter/X</a>
+                    <a href="#" id="footerTelegram">Telegram</a>
+                    <a href="#" id="footerChart">Chart</a>
+                    <a href="#" id="footerPump">Pump.fun</a>
+                </div>
+                <p class="copyright">© 2024 Somali Daycare. All rights reserved. Wallahi.</p>
+            </div>
+            <img src="baby4.png" alt="Baby" class="footer-mascot">
         </div>
-    </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
