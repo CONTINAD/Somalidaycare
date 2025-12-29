@@ -133,6 +133,7 @@ let gameState = {
     totalSpins: 0,
     currentRotation: 0,
     isSpinning: false,
+    justSpun: false,
     timerSeconds: 60,
     timerInterval: null,
     history: []
@@ -702,16 +703,25 @@ function startTimer() {
 
 function updateSyncedTimer() {
     const now = new Date();
-    const secondsUntilNextMinute = 60 - now.getSeconds();
+    const currentSeconds = now.getSeconds();
+    const secondsUntilNextMinute = currentSeconds === 0 ? 60 : 60 - currentSeconds;
 
     gameState.timerSeconds = secondsUntilNextMinute;
     timer.textContent = formatTime(gameState.timerSeconds);
 
-    // Spin at exactly :00 seconds
-    if (now.getSeconds() === 0 && !gameState.isSpinning) {
+    // Spin when we hit :00 seconds (timer shows 60 or 00:60)
+    // Use a small window to catch it
+    if (currentSeconds === 0 && !gameState.isSpinning && !gameState.justSpun) {
+        gameState.justSpun = true; // Prevent double spin
         if (gameState.babies.length > 0) {
+            console.log('SPINNING WHEEL NOW!');
             spinWheel();
         }
+    }
+
+    // Reset justSpun flag after a few seconds
+    if (currentSeconds > 5) {
+        gameState.justSpun = false;
     }
 
     // Flash when low
