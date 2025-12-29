@@ -1,362 +1,261 @@
 /**
- * SOMALI DAYCARE - VIRAL MEME GAME
- * Where chaos meets custody 🇸🇴👶
- * Connected to pump.fun
+ * SOMALI DAYCARE - BABY RACING GAME
+ * Watch babies race across the classroom!
  */
 
 // ============================================
-// PUMP.FUN CONFIGURATION
+// CONFIGURATION
 // ============================================
 
-const PUMP_CONFIG = {
-    // Replace with your actual pump.fun token contract address
-    contractAddress: 'YOUR_PUMP_FUN_CA_HERE',
+const CONFIG = {
+    // Replace with your actual contract address
+    contractAddress: 'YOUR_CA_HERE',
     pumpFunUrl: 'https://pump.fun/',
+    chartUrl: 'https://dexscreener.com/solana/',
     twitterUrl: 'https://twitter.com/',
     telegramUrl: 'https://t.me/',
-    chartUrl: 'https://dexscreener.com/solana/',
 };
 
-// ============================================
-// BABY CONFIGURATION - ALL THE NEW BABIES!
-// ============================================
-
-// Only using working images without checkered backgrounds
-const BABY_IMAGES = [
-    'baby1.png', 'baby2.png', 'baby3.png', 'baby4.png'
+// Baby racers
+const BABIES = [
+    { id: 1, name: 'Lil Cawo', image: 'baby1.png', wins: 0, races: 0 },
+    { id: 2, name: 'Baby Hussein', image: 'baby2.png', wins: 0, races: 0 },
+    { id: 3, name: 'Tiny Abdi', image: 'baby3.png', wins: 0, races: 0 },
+    { id: 4, name: 'Mini Farah', image: 'baby4.png', wins: 0, races: 0 },
 ];
 
-const BABY_NAMES = [
-    'Lil Cawo', 'Baby Hussein', 'Tiny Absane', 'Mini Farah',
-    'Smol Ayub', 'Wee Abdi', 'Lil Guled', 'Baby Sahra',
-    'Tiny Hawa', 'Mini Yusuf', 'Smol Khadija', 'Wee Omar',
-    'Lil Amina', 'Baby Jabril', 'Tiny Halima', 'Mini Ismail',
-    'Captain Rugbeard', 'Diamond Danny', 'Moonshot Musa',
-    'Whale Warsame', 'Paper Hands Pete', 'Dev Dahir',
-    'Chef Cabdi', 'Rich Roble', 'Crying Cumar'
-];
-
-const RARITIES = ['common', 'common', 'common', 'rare', 'rare', 'epic', 'legendary'];
-
-// ============================================
-// WHEEL OUTCOMES
-// ============================================
-
-const WHEEL_OUTCOMES = [
-    {
-        name: 'AIRDROP',
-        icon: '💸',
-        message: 'AIRDROP SECURED! Dev blessed your baby with free tokens. Inshallah!',
-        type: 'win',
-        points: 100,
-        color: '#00D26A'
-    },
-    {
-        name: 'WALLAHI',
-        icon: '💀',
-        message: 'Wallahi bro nothing happened. Your baby just vibin. Try again.',
-        type: 'neutral',
-        points: 0,
-        color: '#607D8B'
-    },
-    {
-        name: 'PUMP',
-        icon: '📈',
-        message: 'PUMP! Chart going crazy! Baby securing generational wealth rn!',
-        type: 'win',
-        points: 150,
-        color: '#2196F3'
-    },
-    {
-        name: 'RUGGED',
-        icon: '💀',
-        message: 'RUGGED! Dev took the LP and went back to Mogadishu. Maalin xun!',
-        type: 'lose',
-        points: -100,
-        color: '#FF4757'
-    },
-    {
-        name: 'MOON',
-        icon: '🚀',
-        message: 'TO THE MOOOOON! Baby eating lobster tonight! Mashallah!',
-        type: 'win',
-        points: 500,
-        color: '#FFD700'
-    },
-    {
-        name: 'JEET',
-        icon: '📉',
-        message: 'Some jeet paper handed. Baby crying but we HODLing still.',
-        type: 'lose',
-        points: -50,
-        color: '#9C27B0'
-    },
-    {
-        name: 'BABY',
-        icon: '👶',
-        message: 'Alhamdulillah! Free baby appeared! The daycare is expanding!',
-        type: 'win',
-        points: 200,
-        color: '#00BCD4'
-    },
-    {
-        name: 'SABAR',
-        icon: '🙏',
-        message: 'Sabar (patience). Nothing this spin. Allah has a plan.',
-        type: 'neutral',
-        points: 0,
-        color: '#455A64'
-    }
+const WIN_MESSAGES = [
+    "Mashallah! Generational wealth secured! 🚀",
+    "Alhamdulillah! This baby is going to the moon! 🌙",
+    "Wallahi this baby can't stop winning! 💰",
+    "The prophecy is fulfilled! Diamond hands! 💎",
+    "Inshallah! The fastest baby in the daycare! 🏆",
 ];
 
 // ============================================
 // STATE
 // ============================================
 
-let gameState = {
-    babies: [],
-    holders: [],
-    totalWins: 0,
-    totalLosses: 0,
-    totalSpins: 0,
-    currentRotation: 0,
-    isSpinning: false,
-    timerSeconds: 60,
-    timerInterval: null,
-    history: []
-};
+let isRacing = false;
+let totalRaces = 0;
+let racers = [];
 
 // ============================================
 // DOM ELEMENTS
 // ============================================
 
-let wheelCanvas, ctx, spinBtn, timer, resultDisplay, resultTitle, resultMessage, resultIcon;
-let babiesGrid, addBabyBtn, historyLog, leaderboard;
-let totalBabiesEl, totalWinsEl, totalLossesEl, totalSpinsEl;
-let tokenCA, buyBtn, chartBtn, tickerBabies, tickerBabies2, tickerSpins;
-
-function initElements() {
-    wheelCanvas = document.getElementById('wheelCanvas');
-    ctx = wheelCanvas.getContext('2d');
-    spinBtn = document.getElementById('spinBtn');
-    timer = document.getElementById('timer');
-    resultDisplay = document.getElementById('resultDisplay');
-    resultTitle = document.getElementById('resultTitle');
-    resultMessage = document.getElementById('resultMessage');
-    resultIcon = document.getElementById('resultIcon');
-    babiesGrid = document.getElementById('babiesGrid');
-    addBabyBtn = document.getElementById('addBabyBtn');
-    historyLog = document.getElementById('historyLog');
-    leaderboard = document.getElementById('leaderboard');
-
-    totalBabiesEl = document.getElementById('totalBabies');
-    totalWinsEl = document.getElementById('totalWins');
-    totalLossesEl = document.getElementById('totalLosses');
-    totalSpinsEl = document.getElementById('totalSpins');
-
-    tokenCA = document.getElementById('tokenCA');
-    buyBtn = document.getElementById('buyBtn');
-    chartBtn = document.getElementById('chartBtn');
-    tickerBabies = document.getElementById('tickerBabies');
-    tickerBabies2 = document.getElementById('tickerBabies2');
-    tickerSpins = document.getElementById('tickerSpins');
-}
+const lanesContainer = document.getElementById('lanes');
+const raceBtn = document.getElementById('raceBtn');
+const raceStatus = document.getElementById('raceStatus');
+const winnerPopup = document.getElementById('winnerPopup');
+const leaderboard = document.getElementById('leaderboard');
+const totalRacesEl = document.getElementById('totalRaces');
 
 // ============================================
-// WHEEL DRAWING
+// INITIALIZATION
 // ============================================
 
-function drawWheel(rotation = 0) {
-    const centerX = wheelCanvas.width / 2;
-    const centerY = wheelCanvas.height / 2;
-    const radius = Math.min(centerX, centerY) - 10;
+function init() {
+    setupCA();
+    createLanes();
+    updateLeaderboard();
 
-    ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
-    ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate(rotation * Math.PI / 180);
-
-    const numSegments = WHEEL_OUTCOMES.length;
-    const arc = (2 * Math.PI) / numSegments;
-
-    WHEEL_OUTCOMES.forEach((outcome, i) => {
-        const angle = i * arc;
-
-        // Draw segment
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.arc(0, 0, radius, angle, angle + arc);
-        ctx.closePath();
-
-        // Gradient fill
-        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
-        gradient.addColorStop(0, lightenColor(outcome.color, 50));
-        gradient.addColorStop(0.6, outcome.color);
-        gradient.addColorStop(1, darkenColor(outcome.color, 30));
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        // Segment border
-        ctx.strokeStyle = '#FFD700';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        // Draw text
-        ctx.save();
-        ctx.rotate(angle + arc / 2);
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        const label = outcome.name;
-        const textRadius = radius * 0.65;
-
-        // Black outline for readability
-        ctx.font = 'bold 18px Bangers, Impact, sans-serif';
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 5;
-        ctx.lineJoin = 'round';
-        ctx.strokeText(label, textRadius, 0);
-
-        // White fill
-        ctx.fillStyle = '#fff';
-        ctx.fillText(label, textRadius, 0);
-
-        ctx.restore();
-    });
-
-    ctx.restore();
+    raceBtn.addEventListener('click', startRace);
 }
 
-function lightenColor(color, percent) {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) + amt;
-    const G = ((num >> 8) & 0x00FF) + amt;
-    const B = (num & 0x0000FF) + amt;
-    return '#' + (0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
-        (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
-        (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1);
-}
+function setupCA() {
+    const ca = CONFIG.contractAddress;
+    const caEl = document.getElementById('caAddress');
+    const buyBtn = document.getElementById('buyBtn');
+    const chartBtn = document.getElementById('chartBtn');
+    const twitterBtn = document.getElementById('twitterBtn');
+    const telegramBtn = document.getElementById('telegramBtn');
 
-function darkenColor(color, percent) {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = (num >> 16) - amt;
-    const G = ((num >> 8) & 0x00FF) - amt;
-    const B = (num & 0x0000FF) - amt;
-    return '#' + (0x1000000 + (R > 0 ? R : 0) * 0x10000 +
-        (G > 0 ? G : 0) * 0x100 +
-        (B > 0 ? B : 0)).toString(16).slice(1);
-}
-
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
-
-function getRandomItem(array) {
-    return array[Math.floor(Math.random() * array.length)];
-}
-
-function generateHolderAddress() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
-    let addr = '';
-    for (let i = 0; i < 4; i++) {
-        addr += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return addr + '...' + chars.substring(0, 4);
-}
-
-function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-}
-
-function getCurrentTime() {
-    const now = new Date();
-    return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-}
-
-// ============================================
-// PUMP.FUN INTEGRATION
-// ============================================
-
-function initPumpFun() {
-    const ca = PUMP_CONFIG.contractAddress;
-
-    if (ca && ca !== 'YOUR_PUMP_FUN_CA_HERE') {
-        tokenCA.textContent = ca.slice(0, 6) + '...' + ca.slice(-4);
-        tokenCA.title = ca;
-
+    if (ca && ca !== 'YOUR_CA_HERE') {
+        caEl.textContent = ca;
         buyBtn.href = `https://pump.fun/${ca}`;
         chartBtn.href = `https://dexscreener.com/solana/${ca}`;
-
-        document.getElementById('footerPump').href = `https://pump.fun/${ca}`;
-        document.getElementById('footerChart').href = `https://dexscreener.com/solana/${ca}`;
     } else {
-        tokenCA.textContent = 'Coming Soon...';
-        buyBtn.href = 'https://pump.fun';
-        chartBtn.href = '#';
+        caEl.textContent = 'Coming Soon...';
     }
 
-    // Set social links (update these with your actual links)
-    document.getElementById('twitterBtn').href = PUMP_CONFIG.twitterUrl;
-    document.getElementById('telegramBtn').href = PUMP_CONFIG.telegramUrl;
-    document.getElementById('footerTwitter').href = PUMP_CONFIG.twitterUrl;
-    document.getElementById('footerTelegram').href = PUMP_CONFIG.telegramUrl;
-
-    loadLeaderboard();
+    twitterBtn.href = CONFIG.twitterUrl;
+    telegramBtn.href = CONFIG.telegramUrl;
 }
 
-function copyCA() {
-    const ca = PUMP_CONFIG.contractAddress;
-    if (ca && ca !== 'YOUR_PUMP_FUN_CA_HERE') {
-        navigator.clipboard.writeText(ca);
-        tokenCA.textContent = 'Copied! ✅';
-        setTimeout(() => {
-            tokenCA.textContent = ca.slice(0, 6) + '...' + ca.slice(-4);
-        }, 1500);
-    } else {
-        tokenCA.textContent = 'No CA yet!';
-        setTimeout(() => {
-            tokenCA.textContent = 'Coming Soon...';
-        }, 1500);
+function createLanes() {
+    lanesContainer.innerHTML = '';
+    racers = [];
+
+    BABIES.forEach((baby, index) => {
+        const lane = document.createElement('div');
+        lane.className = 'lane';
+        lane.innerHTML = `<span class="lane-number">${index + 1}</span>`;
+
+        const racer = document.createElement('div');
+        racer.className = 'racer';
+        racer.id = `racer-${baby.id}`;
+        racer.innerHTML = `
+            <img src="${baby.image}" alt="${baby.name}">
+            <span class="racer-name">${baby.name}</span>
+        `;
+        racer.onclick = () => showCharacterPopup(baby);
+
+        lane.appendChild(racer);
+        lanesContainer.appendChild(lane);
+
+        racers.push({
+            element: racer,
+            baby: baby,
+            position: 20,
+            speed: 0,
+            finished: false
+        });
+    });
+}
+
+// ============================================
+// RACING LOGIC
+// ============================================
+
+function startRace() {
+    if (isRacing) return;
+
+    isRacing = true;
+    raceBtn.disabled = true;
+    raceStatus.textContent = '🏁 RACING! GO GO GO! 🏁';
+
+    // Reset positions
+    racers.forEach(racer => {
+        racer.position = 20;
+        racer.speed = 0;
+        racer.finished = false;
+        racer.element.style.left = '20px';
+        racer.element.classList.add('racing');
+    });
+
+    // Increment race count
+    totalRaces++;
+    BABIES.forEach(b => b.races++);
+    totalRacesEl.textContent = totalRaces;
+
+    // Start animation
+    requestAnimationFrame(raceLoop);
+}
+
+function raceLoop() {
+    if (!isRacing) return;
+
+    const trackWidth = document.querySelector('.race-track').offsetWidth;
+    const finishLine = trackWidth - 130; // Finish line position
+
+    let allFinished = true;
+    let winner = null;
+
+    racers.forEach(racer => {
+        if (racer.finished) return;
+
+        allFinished = false;
+
+        // Random speed variation (creates exciting races)
+        racer.speed = 2 + Math.random() * 6;
+        racer.position += racer.speed;
+
+        racer.element.style.left = racer.position + 'px';
+
+        // Check if crossed finish line
+        if (racer.position >= finishLine && !racer.finished) {
+            racer.finished = true;
+            if (!winner) {
+                winner = racer;
+            }
+        }
+    });
+
+    if (winner && !allFinished) {
+        // We have a winner!
+        endRace(winner);
+    } else if (!allFinished) {
+        requestAnimationFrame(raceLoop);
     }
 }
 
-window.copyCA = copyCA;
+function endRace(winner) {
+    isRacing = false;
+
+    // Stop racing animation
+    racers.forEach(r => r.element.classList.remove('racing'));
+
+    // Update winner stats
+    winner.baby.wins++;
+
+    // Show winner popup
+    showWinnerPopup(winner.baby);
+
+    // Update leaderboard
+    updateLeaderboard();
+
+    // Re-enable button
+    raceBtn.disabled = false;
+    raceStatus.textContent = `🏆 ${winner.baby.name} WINS! Click to race again!`;
+}
+
+// ============================================
+// POPUPS
+// ============================================
+
+function showWinnerPopup(baby) {
+    document.getElementById('winnerImage').src = baby.image;
+    document.getElementById('winnerName').textContent = baby.name;
+    document.getElementById('winnerMessage').textContent = WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)];
+    document.getElementById('winnerWins').textContent = baby.wins;
+    document.getElementById('winnerRaces').textContent = baby.races;
+
+    winnerPopup.classList.add('show');
+}
+
+function closePopup() {
+    winnerPopup.classList.remove('show');
+}
+
+function showCharacterPopup(baby) {
+    if (isRacing) return;
+
+    document.getElementById('charImage').src = baby.image;
+    document.getElementById('charName').textContent = baby.name;
+    document.getElementById('charWins').textContent = baby.wins;
+    document.getElementById('charRaces').textContent = baby.races;
+    document.getElementById('charWinRate').textContent = baby.races > 0
+        ? Math.round((baby.wins / baby.races) * 100) + '%'
+        : '0%';
+
+    document.getElementById('characterPopup').classList.add('show');
+}
+
+function closeCharPopup() {
+    document.getElementById('characterPopup').classList.remove('show');
+}
 
 // ============================================
 // LEADERBOARD
 // ============================================
 
-function loadLeaderboard() {
-    const mockHolders = [
-        { address: generateHolderAddress(), amount: '420.69M', rank: 1, image: 'baby1.png' },
-        { address: generateHolderAddress(), amount: '69.42M', rank: 2, image: 'baby2.png' },
-        { address: generateHolderAddress(), amount: '33.33M', rank: 3, image: 'baby3.png' },
-        { address: generateHolderAddress(), amount: '21.00M', rank: 4, image: 'baby4.png' },
-        { address: generateHolderAddress(), amount: '10.50M', rank: 5, image: 'baby1.png' },
-    ];
+function updateLeaderboard() {
+    const sorted = [...BABIES].sort((a, b) => b.wins - a.wins);
 
-    gameState.holders = mockHolders;
-    renderLeaderboard();
-}
-
-function renderLeaderboard() {
-    leaderboard.innerHTML = gameState.holders.map(holder => {
+    leaderboard.innerHTML = sorted.map((baby, index) => {
         let rankClass = '';
-        if (holder.rank === 1) rankClass = 'top-1';
-        else if (holder.rank === 2) rankClass = 'top-2';
-        else if (holder.rank === 3) rankClass = 'top-3';
+        if (index === 0 && baby.wins > 0) rankClass = 'top-1';
+        else if (index === 1 && baby.wins > 0) rankClass = 'top-2';
+        else if (index === 2 && baby.wins > 0) rankClass = 'top-3';
 
         return `
-            <div class="leaderboard-item ${rankClass}">
-                <div class="lb-rank">#${holder.rank}</div>
-                <img src="${holder.image}" alt="Holder" class="lb-avatar">
+            <div class="lb-item ${rankClass}" onclick="showCharacterPopup(BABIES.find(b => b.id === ${baby.id}))">
+                <span class="lb-rank">#${index + 1}</span>
+                <img src="${baby.image}" alt="${baby.name}" class="lb-avatar">
                 <div class="lb-info">
-                    <div class="lb-address">${holder.address}</div>
-                    <div class="lb-amount">💰 ${holder.amount} $SOMALI</div>
+                    <div class="lb-name">${baby.name}</div>
+                    <div class="lb-wins">${baby.wins} wins</div>
                 </div>
             </div>
         `;
@@ -364,266 +263,24 @@ function renderLeaderboard() {
 }
 
 // ============================================
-// BABY MANAGEMENT
+// COPY CA
 // ============================================
 
-function createBaby() {
-    const rarity = getRandomItem(RARITIES);
-
-    // Using the 4 working baby images for all rarities
-    const imagePool = ['baby1.png', 'baby2.png', 'baby3.png', 'baby4.png'];
-
-    const baby = {
-        id: Date.now() + Math.random(),
-        name: getRandomItem(BABY_NAMES),
-        image: getRandomItem(imagePool),
-        holder: generateHolderAddress(),
-        wins: 0,
-        losses: 0,
-        status: 'neutral',
-        rarity: rarity
-    };
-
-    gameState.babies.push(baby);
-    renderBabies();
-    updateStats();
-
-    const rarityEmoji = rarity === 'legendary' ? '🌟' : rarity === 'epic' ? '💎' : rarity === 'rare' ? '✨' : '👶';
-    addToHistory(`${rarityEmoji} New ${rarity.toUpperCase()} baby "${baby.name}" adopted!`, 'neutral');
-
-    return baby;
-}
-
-function renderBabies() {
-    babiesGrid.innerHTML = '';
-
-    gameState.babies.forEach(baby => {
-        const card = document.createElement('div');
-        card.className = `baby-card ${baby.status}`;
-        card.innerHTML = `
-            <span class="baby-rarity ${baby.rarity}">${baby.rarity.toUpperCase()}</span>
-            <div class="baby-image-container">
-                <img src="${baby.image}" alt="${baby.name}" class="baby-image">
-            </div>
-            <div class="baby-name">${baby.name}</div>
-            <div class="baby-holder">${baby.holder}</div>
-            <div class="baby-stats">
-                <div class="baby-stat">
-                    <div class="baby-stat-value">${baby.wins}</div>
-                    <div class="baby-stat-label">Wins</div>
-                </div>
-                <div class="baby-stat">
-                    <div class="baby-stat-value">${baby.losses}</div>
-                    <div class="baby-stat-label">Rugs</div>
-                </div>
-            </div>
-        `;
-        babiesGrid.appendChild(card);
-    });
-}
-
-// ============================================
-// WHEEL SPIN LOGIC
-// ============================================
-
-function spinWheel() {
-    if (gameState.isSpinning || gameState.babies.length === 0) {
-        if (gameState.babies.length === 0) {
-            resultIcon.textContent = '⚠️';
-            resultTitle.textContent = 'NO BABIES!';
-            resultMessage.textContent = 'You need to adopt a baby first! Click the button below.';
-        }
-        return;
+function copyCA() {
+    const ca = CONFIG.contractAddress;
+    if (ca && ca !== 'YOUR_CA_HERE') {
+        navigator.clipboard.writeText(ca);
+        const feedback = document.getElementById('copyFeedback');
+        feedback.classList.add('show');
+        setTimeout(() => feedback.classList.remove('show'), 1500);
     }
-
-    gameState.isSpinning = true;
-    spinBtn.disabled = true;
-
-    // Calculate random spin
-    const numSegments = WHEEL_OUTCOMES.length;
-    const segmentAngle = 360 / numSegments;
-    const randomSpins = 5 + Math.random() * 5;
-    const outcomeIndex = Math.floor(Math.random() * numSegments);
-
-    const targetAngle = 360 - (outcomeIndex * segmentAngle) - segmentAngle / 2 + 90;
-    const totalRotation = gameState.currentRotation + (randomSpins * 360) + targetAngle;
-
-    // Animate
-    animateWheel(gameState.currentRotation, totalRotation, 4000, () => {
-        const outcome = WHEEL_OUTCOMES[outcomeIndex];
-        handleOutcome(outcome);
-        gameState.isSpinning = false;
-        spinBtn.disabled = false;
-        gameState.totalSpins++;
-        gameState.currentRotation = totalRotation % 360;
-        updateStats();
-        resetTimer();
-    });
 }
 
-function animateWheel(startRotation, endRotation, duration, callback) {
-    const startTime = performance.now();
+// Make functions globally accessible
+window.closePopup = closePopup;
+window.closeCharPopup = closeCharPopup;
+window.showCharacterPopup = showCharacterPopup;
+window.copyCA = copyCA;
 
-    function animate(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        // Easing
-        const easeOut = 1 - Math.pow(1 - progress, 4);
-        const currentRotation = startRotation + (endRotation - startRotation) * easeOut;
-
-        drawWheel(currentRotation);
-
-        if (progress < 1) {
-            requestAnimationFrame(animate);
-        } else {
-            callback();
-        }
-    }
-
-    requestAnimationFrame(animate);
-}
-
-function handleOutcome(outcome) {
-    resultIcon.textContent = outcome.icon;
-    resultTitle.textContent = outcome.name + '!';
-    resultMessage.textContent = outcome.message;
-    resultDisplay.className = `result-display ${outcome.type}`;
-
-    // Select random baby
-    const luckyBaby = getRandomItem(gameState.babies);
-
-    // Update stats
-    if (outcome.type === 'win') {
-        luckyBaby.wins++;
-        luckyBaby.status = 'winner';
-        gameState.totalWins++;
-        addToHistory(`🎉 ${luckyBaby.name} won! ${outcome.name}!`, 'win');
-    } else if (outcome.type === 'lose') {
-        luckyBaby.losses++;
-        luckyBaby.status = 'loser';
-        gameState.totalLosses++;
-        addToHistory(`💀 ${luckyBaby.name} got ${outcome.name}!`, 'lose');
-    } else {
-        luckyBaby.status = 'neutral';
-        addToHistory(`😐 ${outcome.name} - nothing happened to ${luckyBaby.name}`, 'neutral');
-    }
-
-    // Special: FREE BABY
-    if (outcome.name === 'BABY') {
-        createBaby();
-    }
-
-    renderBabies();
-
-    // Reset status after animation
-    setTimeout(() => {
-        gameState.babies.forEach(b => b.status = 'neutral');
-        renderBabies();
-    }, 3000);
-}
-
-// ============================================
-// TIMER
-// ============================================
-
-function startTimer() {
-    gameState.timerInterval = setInterval(() => {
-        gameState.timerSeconds--;
-        timer.textContent = formatTime(gameState.timerSeconds);
-
-        if (gameState.timerSeconds <= 0) {
-            if (gameState.babies.length > 0 && !gameState.isSpinning) {
-                spinWheel();
-            } else {
-                resetTimer();
-            }
-        }
-
-        // Flash when low
-        if (gameState.timerSeconds <= 10) {
-            timer.style.color = gameState.timerSeconds % 2 === 0 ? '#FF4757' : '#FFD700';
-        } else {
-            timer.style.color = '#FFD700';
-        }
-    }, 1000);
-}
-
-function resetTimer() {
-    gameState.timerSeconds = 60;
-    timer.textContent = formatTime(gameState.timerSeconds);
-}
-
-// ============================================
-// HISTORY
-// ============================================
-
-function addToHistory(text, type = 'neutral') {
-    const entry = {
-        time: getCurrentTime(),
-        text: text,
-        type: type
-    };
-
-    gameState.history.unshift(entry);
-
-    if (gameState.history.length > 50) {
-        gameState.history.pop();
-    }
-
-    renderHistory();
-}
-
-function renderHistory() {
-    historyLog.innerHTML = gameState.history.map(entry => `
-        <div class="log-entry ${entry.type}">
-            <span class="log-time">${entry.time}</span>
-            <span class="log-text">${entry.text}</span>
-        </div>
-    `).join('');
-}
-
-// ============================================
-// STATS
-// ============================================
-
-function updateStats() {
-    totalBabiesEl.textContent = gameState.babies.length;
-    totalWinsEl.textContent = gameState.totalWins;
-    totalLossesEl.textContent = gameState.totalLosses;
-    totalSpinsEl.textContent = gameState.totalSpins;
-
-    // Update ticker
-    if (tickerBabies) tickerBabies.textContent = gameState.babies.length;
-    if (tickerBabies2) tickerBabies2.textContent = gameState.babies.length;
-    if (tickerSpins) tickerSpins.textContent = gameState.totalSpins;
-}
-
-// ============================================
-// INITIALIZATION
-// ============================================
-
-function init() {
-    initElements();
-    initPumpFun();
-
-    // Draw wheel
-    drawWheel(0);
-
-    // Event listeners
-    spinBtn.addEventListener('click', spinWheel);
-    addBabyBtn.addEventListener('click', createBaby);
-
-    // Start with 3 random babies
-    for (let i = 0; i < 3; i++) {
-        createBaby();
-    }
-
-    // Start timer
-    startTimer();
-
-    updateStats();
-    addToHistory('🏠 Welcome to Somali Daycare! Spin the wheel for chaos!', 'neutral');
-}
-
+// Initialize on load
 document.addEventListener('DOMContentLoaded', init);
