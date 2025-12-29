@@ -88,14 +88,6 @@ const WHEEL_OUTCOMES = [
         color: '#FF6B35'
     },
     {
-        name: 'WHALE',
-        icon: '🐋',
-        message: 'A WHALE IS ENTERING! Big buyer spotted! The daycare is about to pump!',
-        type: 'win',
-        action: 'whale_alert',
-        color: '#2196F3'
-    },
-    {
         name: 'HODL',
         icon: '💎',
         message: 'DIAMOND HANDS! Fees being saved for a BIGGER buyback later. Patience pays!',
