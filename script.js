@@ -24,7 +24,7 @@ const PUMP_CONFIG = {
 const HELIUS_CONFIG = {
     apiKey: 'ae211108-bdbf-40af-90e2-c5418e3f62d3',
     rpcUrl: 'https://mainnet.helius-rpc.com/?api-key=ae211108-bdbf-40af-90e2-c5418e3f62d3',
-    minHoldingsUSD: 50, // Minimum $50 worth to be eligible for airdrop
+    minTokens: 500000, // Minimum 500k tokens to be eligible for airdrop
 };
 
 // ============================================
@@ -221,16 +221,18 @@ function drawWheel(rotation = 0) {
         ctx.textBaseline = 'middle';
 
         const label = outcome.name;
-        const textRadius = radius * 0.65;
+        const textRadius = radius * 0.62;
 
-        // Black outline for readability
-        ctx.font = 'bold 18px Bangers, Impact, sans-serif';
+        // BIG BOLD TEXT - carnival style
+        ctx.font = 'bold 32px Bangers, Impact, sans-serif';
+
+        // Thick black outline for readability
         ctx.strokeStyle = '#000';
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 8;
         ctx.lineJoin = 'round';
         ctx.strokeText(label, textRadius, 0);
 
-        // White fill
+        // Bright white fill
         ctx.fillStyle = '#fff';
         ctx.fillText(label, textRadius, 0);
 
@@ -631,19 +633,17 @@ async function selectAirdropWinner() {
 
         if (cachedHolders.length === 0) {
             document.getElementById('winnerAddress').textContent = 'No holders found!';
-            document.getElementById('winnerHoldings').textContent = '$0.00';
+            document.getElementById('winnerHoldings').textContent = '0 tokens';
             return;
         }
 
-        // Get token price
-        const tokenPrice = await getTokenPrice();
-
-        // Filter holders with $50+ worth
+        // Filter holders with 500k+ tokens
         const eligibleHolders = cachedHolders.filter(holder => {
             const balance = holder.amount / Math.pow(10, 6); // Adjust decimals as needed
-            const valueUSD = balance * tokenPrice;
-            return valueUSD >= HELIUS_CONFIG.minHoldingsUSD;
+            return balance >= HELIUS_CONFIG.minTokens;
         });
+
+        console.log(`Found ${eligibleHolders.length} holders with 500k+ tokens`);
 
         // If no eligible holders, pick from all holders
         const holderPool = eligibleHolders.length > 0 ? eligibleHolders : cachedHolders;
@@ -651,14 +651,13 @@ async function selectAirdropWinner() {
         // Pick random winner
         const winner = holderPool[Math.floor(Math.random() * holderPool.length)];
         const balance = winner.amount / Math.pow(10, 6);
-        const valueUSD = balance * tokenPrice;
 
         // Get the owner address (wallet address)
         currentWinnerAddress = winner.owner || winner.address || 'Unknown';
 
         // Update popup
         document.getElementById('winnerAddress').textContent = currentWinnerAddress;
-        document.getElementById('winnerHoldings').textContent = `${balance.toLocaleString()} tokens (~$${valueUSD.toFixed(2)})`;
+        document.getElementById('winnerHoldings').textContent = `${balance.toLocaleString()} tokens`;
 
         // Log the winner
         addToHistory(`🎁 AIRDROP WINNER: ${currentWinnerAddress.substring(0, 8)}...${currentWinnerAddress.slice(-4)}`, 'win');
@@ -714,8 +713,8 @@ function startTimer() {
 }
 
 function resetTimer() {
-    // 60 minutes = 3600 seconds for hourly spins
-    gameState.timerSeconds = 3600;
+    // 1 minute for testing (60 seconds)
+    gameState.timerSeconds = 60;
     timer.textContent = formatTime(gameState.timerSeconds);
 }
 
