@@ -58,7 +58,7 @@ const WHEEL_OUTCOMES = [
     {
         name: 'BUYBACK',
         icon: '💰',
-        message: 'BUYBACK TIME! Dev using creator fees to buy $SOMALI off the market! Price go up inshallah!',
+        message: 'BUYBACK TIME! Dev using creator fees to buy $DAYCARE off the market! Price go up inshallah!',
         type: 'win',
         action: 'buyback',
         color: '#00D26A'
@@ -422,7 +422,7 @@ function renderLeaderboard() {
                 <img src="${holder.image}" alt="Holder" class="lb-avatar">
                 <div class="lb-info">
                     <div class="lb-address">${holder.address}</div>
-                    <div class="lb-amount">💰 ${holder.amount} $SOMALI</div>
+                    <div class="lb-amount">💰 ${holder.amount} $DAYCARE</div>
                 </div>
             </div>
         `;
