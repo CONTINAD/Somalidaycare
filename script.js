@@ -130,7 +130,7 @@ let gameState = {
 let wheelCanvas, ctx, timer, resultDisplay, resultTitle, resultMessage, resultIcon;
 let babiesGrid, addBabyBtn, historyLog, leaderboard, lastResultEl;
 let totalBabiesEl, totalWinsEl, totalLossesEl, totalSpinsEl;
-let tokenCA, buyBtn, chartBtn, tickerBabies, tickerBabies2, tickerSpins;
+let tokenCA, buyBtn, chartBtn;
 
 function initElements() {
     wheelCanvas = document.getElementById('wheelCanvas');
@@ -155,9 +155,6 @@ function initElements() {
     tokenCA = document.getElementById('tokenCA');
     buyBtn = document.getElementById('buyBtn');
     chartBtn = document.getElementById('chartBtn');
-    tickerBabies = document.getElementById('tickerBabies');
-    tickerBabies2 = document.getElementById('tickerBabies2');
-    tickerSpins = document.getElementById('tickerSpins');
 }
 
 // ============================================
@@ -301,9 +298,7 @@ function initPumpFun() {
 
     // Set social links (update these with your actual links)
     document.getElementById('twitterBtn').href = PUMP_CONFIG.twitterUrl;
-    document.getElementById('telegramBtn').href = PUMP_CONFIG.telegramUrl;
     document.getElementById('footerTwitter').href = PUMP_CONFIG.twitterUrl;
-    document.getElementById('footerTelegram').href = PUMP_CONFIG.telegramUrl;
 
     loadLeaderboard();
 }
@@ -330,17 +325,88 @@ window.copyCA = copyCA;
 // LEADERBOARD
 // ============================================
 
-function loadLeaderboard() {
-    const mockHolders = [
-        { address: generateHolderAddress(), amount: '420.69M', rank: 1, image: 'baby_king.png' },
-        { address: generateHolderAddress(), amount: '69.42M', rank: 2, image: 'baby_suit.png' },
-        { address: generateHolderAddress(), amount: '33.33M', rank: 3, image: 'baby_diamond2.png' },
-        { address: generateHolderAddress(), amount: '21.00M', rank: 4, image: 'baby_moon2.png' },
-        { address: generateHolderAddress(), amount: '10.50M', rank: 5, image: 'baby_hodl.png' },
-    ];
+// Fetch real token holders from Helius DAS API
+async function loadLeaderboard() {
+    // Show loading state
+    leaderboard.innerHTML = '<div class="loading-holders">Loading real holders...</div>';
 
-    gameState.holders = mockHolders;
+    try {
+        const response = await fetch(HELIUS_CONFIG.rpcUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: 'get-token-accounts',
+                method: 'getTokenAccounts',
+                params: {
+                    mint: PUMP_CONFIG.contractAddress,
+                    limit: 100
+                }
+            })
+        });
+
+        const data = await response.json();
+        console.log('Helius holder response:', data);
+
+        if (data.result && data.result.token_accounts && data.result.token_accounts.length > 0) {
+            // Known LP/Bonding Curve addresses to exclude
+            const excludedAddresses = [
+                '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1', // Raydium Authority
+                'CbcS6sUf8MQSxe3UJhH3oFYXWSxvnkSRQ9q9RpzSCqrH', // Pump.fun Bonding Curve
+                '39azUYFWPz3VHgKCf3VChUwbpURdCHRxjWVowf5jUJjg', // Pump.fun Fee Account
+                // Add more known LP addresses as needed
+            ];
+
+            // Sort by balance descending, filter out LP addresses, and take top 5
+            const sortedHolders = data.result.token_accounts
+                .map(acc => ({
+                    address: acc.owner,
+                    amount: acc.amount / Math.pow(10, 6) // Adjust for decimals
+                }))
+                .filter(holder => !excludedAddresses.includes(holder.address))
+                .sort((a, b) => b.amount - a.amount)
+                .slice(0, 5);
+
+            // Format holders for display
+            const babyImages = ['baby_king.png', 'baby_suit.png', 'baby_diamond2.png', 'baby_moon2.png', 'baby_hodl.png'];
+
+            gameState.holders = sortedHolders.map((holder, index) => ({
+                address: holder.address.slice(0, 4) + '...' + holder.address.slice(-4),
+                fullAddress: holder.address,
+                amount: formatTokenAmount(holder.amount),
+                rank: index + 1,
+                image: babyImages[index] || 'baby_suit.png'
+            }));
+
+            // Also cache for airdrop selection
+            cachedHolders = data.result.token_accounts;
+        } else {
+            // Fallback to mock data if no holders found
+            console.log('No holders found, using mock data');
+            gameState.holders = [
+                { address: 'Wait...', amount: 'No holders yet!', rank: 1, image: 'baby_king.png' },
+            ];
+        }
+    } catch (error) {
+        console.error('Error fetching holders:', error);
+        // Fallback on error
+        gameState.holders = [
+            { address: 'Error', amount: 'Could not load', rank: 1, image: 'baby_crying.png' },
+        ];
+    }
+
     renderLeaderboard();
+}
+
+function formatTokenAmount(amount) {
+    if (amount >= 1000000000) {
+        return (amount / 1000000000).toFixed(2) + 'B';
+    } else if (amount >= 1000000) {
+        return (amount / 1000000).toFixed(2) + 'M';
+    } else if (amount >= 1000) {
+        return (amount / 1000).toFixed(2) + 'K';
+    }
+    return amount.toFixed(0);
 }
 
 function renderLeaderboard() {
@@ -772,11 +838,6 @@ function updateStats() {
     totalWinsEl.textContent = gameState.totalWins;
     totalLossesEl.textContent = gameState.totalLosses;
     totalSpinsEl.textContent = gameState.totalSpins;
-
-    // Update ticker
-    if (tickerBabies) tickerBabies.textContent = gameState.babies.length;
-    if (tickerBabies2) tickerBabies2.textContent = gameState.babies.length;
-    if (tickerSpins) tickerSpins.textContent = gameState.totalSpins;
 }
 
 // ============================================
